@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IoTMetrics.Database
+namespace IoTMetrics.Models
 {
-    class DBContext
+    public class Integration
     {
+        public string DefaultConnection { get; set; }
     }
 }
