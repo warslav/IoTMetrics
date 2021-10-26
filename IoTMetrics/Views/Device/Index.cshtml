@@ -1,0 +1,53 @@
+﻿@model IEnumerable<IoTMetrics.Models.Models.Device>
+
+@{ ViewData["Title"] = "Index"; }
+
+
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-success btn-sm">New Device</a>
+</p>
+<table class="table table-hover table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Company)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.Id)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Name)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Company)
+    </td>
+    <td>
+        <div class="row">
+            <a asp-controller="Device" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm rounded-circle">
+                <i class="fa fa-pencil-square-o"></i>
+            </a>
+            <a asp-controller="Device" asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm rounded-circle">
+                <i class="fa fa-tasks"></i>
+            </a>
+            <form asp-controller="Device" asp-action="Delete" asp-route-id="@item.Id" onclick="confirm('Are you sure to delete the @item.Name device ?')">
+                <button type="submit" class="btn btn-danger btn-sm rounded-circle"><i class="fa fa-times-circle"></i></button>
+            </form>
+        </div>
+    </td>
+</tr>}
+    </tbody>
+</table>

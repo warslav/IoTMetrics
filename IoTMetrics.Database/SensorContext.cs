@@ -36,7 +36,7 @@ namespace IoTMetrics.Database
                 .HasMany<Metric>(d => d.Metrics)
                 .WithOne(m => m.Device)
                 .HasForeignKey(m => m.DeviceId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
     }

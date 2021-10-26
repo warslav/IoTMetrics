@@ -14,9 +14,10 @@ namespace IoTMetrics.Models.Models
         public int Value { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime? Time { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime Time { get; set; }
 
-        public int DeviceId { get; set; }
+        public int? DeviceId { get; set; }
         public Device Device { get; set; }
     }
 }

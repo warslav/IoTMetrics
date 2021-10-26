@@ -1,0 +1,35 @@
+﻿@model IoTMetrics.Models.Models.Metric
+
+@{
+    ViewData["Title"] = "New Metric";
+}
+
+<h4>New Metric</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="NewMetric">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label col-form-label-sm"></label>
+                <input asp-for="Name" class="form-control form-control-sm" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Value" class="control-label col-form-label-sm"></label>
+                <input asp-for="Value" class="form-control form-control-sm" />
+                <span asp-validation-for="Value" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Time" class="control-label col-form-label-sm"></label>
+                <input asp-for="Time" class="form-control form-control-sm" type="datetime-local"/>
+                <span asp-validation-for="Time" class="text-danger"></span>
+            </div>
+            <input asp-for="DeviceId" type="hidden" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-outline-success btn-sm" /> &emsp;
+                <a asp-controller="Device" asp-action="Details" asp-route-id="@Model.DeviceId" class="btn btn-link btn-sm">Back to device</a>
+            </div>
+        </form>
+    </div>
+</div>
