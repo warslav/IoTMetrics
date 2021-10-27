@@ -3,6 +3,7 @@ using IoTMetrics.Models.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,6 +141,42 @@ namespace IoTMetrics.Controllers
             _unitOfWork.DeviceRepository.Delete(id);
             await _unitOfWork.SaveAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Search(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            ViewData["DeviceId"] = id;
+            ViewData["DeviceName"] = _unitOfWork.DeviceRepository.GetById(id ?? 0).Name;
+            var devices = await _unitOfWork.MetricRepository.Include(id);
+            if (devices == null)
+            {
+                return NotFound();
+            }
+            return View(devices);
+        }
+
+        public async Task<JsonResult> GraphicData(int deviceId, DateTime startDay, DateTime endDay, string name)
+        {
+            try
+            {
+                List<Metric> devices = await _unitOfWork.MetricRepository.GetMetricsBetweenDates(deviceId, startDay, endDay, name) as List<Metric>;
+                var list = devices.Select(c => new {
+                    Time = c.Time,
+                    Value = c.Value
+                });
+                return new JsonResult(list);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
     }
 }

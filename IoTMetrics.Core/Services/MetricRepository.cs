@@ -30,5 +30,22 @@ namespace IoTMetrics.Core.Services
                 throw new Exception($"Couldn't retrieve entities: {ex.Message}");
             }
         }
+
+        public virtual async Task<ICollection> GetMetricsBetweenDates(int deviceId, DateTime startDay, DateTime endDay, string name)
+        {
+            try
+            {
+                return await _context.Set<Metric>().Include(p => p.Device)
+                    .Where(p => p.DeviceId == deviceId 
+                        && p.Time > startDay 
+                        && p.Time < endDay 
+                        && p.Name == name)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Couldn't retrieve entities: {ex.Message}");
+            }
+        }
     }
 }

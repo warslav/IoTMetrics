@@ -1,0 +1,154 @@
+﻿@model IEnumerable<IoTMetrics.Models.Models.Metric>
+
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h1>Search</h1>
+
+<input type="hidden" id="deviceId" value="@ViewData["DeviceId"]" />
+
+
+<div class="container">
+    <div class="row alert alert-secondary">
+        <div class="input-group">
+            <div class="col-2 p-0">
+                <input class="form-control form-control-sm" id="startDay" type="datetime-local" />
+            </div>
+
+            <div>
+                <div class="input-group-prepand">
+                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+
+            <div class="col-2 p-0">
+                <input class="form-control form-control-sm" id="endDay" type="datetime-local" />
+            </div>
+
+            <div class="col-3 p-0">
+                <select class="form-control form-control-sm" id="name">
+                    <option value="temperature">temperature</option>
+                    <option value="illuminance">illuminance</option>
+                    <option value="air pressure">air pressure</option>
+                    <option value="relative humidity">relative humidity</option>
+                </select>
+            </div>
+
+            <div class="col-4 p-0">
+                <button type="button" class="btn btn-outline-dark btn-sm" id="btnFilter">Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+
+<canvas id="graphic"></canvas>
+
+<br />
+<br />
+
+@section Scripts {
+    <script>$(document).ready(function () {
+        const deviceId = parseInt($("#deviceId").val());
+        const startDay = new Date(2021, 10, 17, 3, 24, 0);
+        const endDay = new Date(2021, 10, 27, 3, 24, 0);
+        const name = "temperature";
+
+    GetGraphicData(deviceId, startDay, endDay, name);
+    });
+
+    $("#btnFilter").on('click', function () {
+        const deviceId = parseInt($("#deviceId").val());
+        const startDay = $("#startDay").val();
+        const endDay = $("#endDay").val();
+        const name = $("#name").val();
+        
+        if (startDay >= endDay) {
+            alert("Invalid Dates");
+        }
+        else {
+            GetGraphicData(deviceId, startDay, endDay, name);
+        }
+    });
+
+        function GetGraphicData(deviceId, startDay, endDay, name) {
+
+        $.ajax({
+            method: "GET",
+            url: "/Device/GraphicData",
+            data: {
+                deviceId: deviceId,
+                startDay: startDay,
+                endDay: endDay,
+                name: name
+            },
+            dataType: 'json',
+            success: function (data) {
+                new Chart(document.getElementById("graphic"), {
+                    type: "line",
+                    data: {
+                        labels: GetDates(data),
+                        datasets: [{
+                            label: "Metric of Device",
+                            data: GetValues(data),
+                            backgroundColor: "#fff",
+                            borderColor: "#c23616",
+                            pointBackgroundColor: "#c23616",
+                            pointBorderColor: "#c23616",
+                            pointStyle: "circle",
+                            fill: false,
+                            lineTension: 0,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        animation: {
+                            easing: "linear",
+                        },
+                        legend: {
+                            labels: {
+                                usePointStyle: true
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines: {
+                                    display: false
+                                }
+                            }],
+                            yAxes: [{
+                                gridLines: {
+                                    display: false
+                                }
+                            }]
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+    function GetDates(data) {
+        let index = 0;
+        let dates = [];
+        while (index < data.length) {
+            dates.push('' + data[index].time);
+            index = index + 1;
+        }
+        
+        return dates;
+    }
+
+    function GetValues(data) {
+        let index = 0;
+        let values = [];
+
+        while (index < data.length) {
+            values.push(data[index].value);
+            index = index + 1;
+        }
+
+        return values;
+    }</script>
+}

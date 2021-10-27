@@ -32,7 +32,7 @@ namespace IoTMetrics.Controllers
         // POST: MetricsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> NewMetric(Metric metric)
+        public async Task<IActionResult> NewMetric([FromBody] Metric metric)
         {
             if (ModelState.IsValid)
             {

@@ -8,6 +8,7 @@
 
 <p>
     <a asp-controller="Metrics" asp-action="NewMetric" asp-route-deviceId="@ViewData["DeviceId"]" class="btn btn-outline-success btn-sm">New Metric</a>
+    <a asp-controller="Device" asp-action="Search" asp-route-id="@ViewData["DeviceId"]" class="btn btn-outline-success btn-sm">Search</a>
 </p>
 <table class="table table-hover table-sm">
     <thead>

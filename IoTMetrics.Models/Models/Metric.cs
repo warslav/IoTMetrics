@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace IoTMetrics.Models.Models
@@ -16,7 +17,6 @@ namespace IoTMetrics.Models.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Time { get; set; }
-
         public int? DeviceId { get; set; }
         public Device Device { get; set; }
     }
