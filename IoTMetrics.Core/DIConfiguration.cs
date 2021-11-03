@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using IoTMetrics.Models;
 using IoTMetrics.Core.Interfaces;
 using IoTMetrics.Core.Services;
+using IoTMetrics.Core.DTO.Options;
 
 namespace IoTMetrics.Core
 {
@@ -21,12 +22,17 @@ namespace IoTMetrics.Core
         
         public static void Configure(IServiceCollection services, IConfiguration configuration)
         {
+            
             services.AddDbContext<SensorContext>(options => options.UseSqlite(
                 configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IDeviceRepository, DeviceRepository>();
             services.AddTransient<IMetricRepository, MetricRepository>();
+
+            var appSettingsConfig = configuration.GetSection("AzureSBSettings");
+            services.Configure<AzureSBOptions>(appSettingsConfig);
+            services.AddHostedService<ReceiverAzureSB>();
         }
     }
 }
