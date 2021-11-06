@@ -14,15 +14,7 @@ namespace IoTMetrics.Database
     {
         public DbSet<Device> Devices { get; set; }
         public DbSet<Metric> Metrics { get; set; }
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlite(Configuration.GetSection("ConnectionStrings").GetSection("DefaultConnection").Value);
-        //}
-        //public SensorContext(DbContextOptions<SensorContext> options,IConfiguration configuration):base(options)
-        //{
-        //    Configuration = configuration;
-        //}
-        //public IConfiguration Configuration { get; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public SensorContext(DbContextOptions<SensorContext> options) : base(options)
         {
@@ -37,6 +29,10 @@ namespace IoTMetrics.Database
                 .WithOne(m => m.Device)
                 .HasForeignKey(m => m.DeviceId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.Name)
+                .IsUnique();
         }
 
     }
