@@ -10,7 +10,7 @@
     <a asp-controller="Metrics" asp-action="NewMetric" asp-route-deviceId="@ViewData["DeviceId"]" class="btn btn-outline-success btn-sm">New Metric</a>
     <a asp-controller="Device" asp-action="Search" asp-route-id="@ViewData["DeviceId"]" class="btn btn-outline-success btn-sm">Search</a>
 </p>
-<table class="table table-hover table-sm">
+<table id="myTable" class="table table-hover table-sm">
     <thead>
         <tr>
             <th>
@@ -23,30 +23,31 @@
                 @Html.DisplayNameFor(model => model.Time)
             </th>
             <th></th>
-            
+
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Time)
-            </td>
-            <td>
-                <div class="row">
-                    <form asp-controller="Metrics" asp-action="Delete" asp-route-id="@item.Id" onclick="confirm('Are you sure to delete the @item.Name metric ?')">
-                        <button type="submit" class="btn btn-danger btn-sm rounded-circle"><i class="fa fa-times-circle"></i></button>
-                    </form>
-                </div>
-            </td>
-            
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Time)
+                </td>
+                <td>
+                    <div class="row">
+                        <form asp-controller="Metrics" asp-action="Delete" asp-route-id="@item.Id" onclick="return confirm('Are you sure to delete the @item.Name metric ?')">
+                            <button type="submit" class="btn btn-danger btn-sm rounded-circle"><i class="fa fa-times-circle"></i></button>
+                        </form>
+                    </div>
+                </td>
+
+            </tr>
+        }
     </tbody>
 </table>
