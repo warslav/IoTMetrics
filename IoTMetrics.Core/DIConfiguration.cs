@@ -38,6 +38,8 @@ namespace IoTMetrics.Core
             var emailAppSettingsConfig = configuration.GetSection("EmailSettings");
             services.Configure<EmailOptions>(emailAppSettingsConfig);
             services.AddTransient<IEmailNotification, EmailNotification>();
+
+            services.AddTransient<SenderAzureSB>();
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IoTMetrics.Database;
 using IoTMetrics.Models.Models;
 using IoTMetrics.Core.Interfaces;
+using IoTMetrics.Core.Services;
 
 namespace IoTMetrics.Controllers
 {
@@ -17,11 +18,13 @@ namespace IoTMetrics.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailNotification _emailNotification;
+        private readonly SenderAzureSB _senderAzureSB;
 
-        public IoTHubController(IUnitOfWork unitOfWork, IEmailNotification emailNotification)
+        public IoTHubController(IUnitOfWork unitOfWork, IEmailNotification emailNotification, SenderAzureSB senderAzureSB)
         {
             _unitOfWork = unitOfWork;
             _emailNotification = emailNotification;
+            _senderAzureSB = senderAzureSB;
         }
 
         // POST: api/IoTHub
@@ -34,8 +37,9 @@ namespace IoTMetrics.Controllers
                 return BadRequest();
             }
             await _emailNotification.CheckMetric(metric.Name, metric.Value);
-            await _unitOfWork.MetricRepository.AddAsync(metric);
-            await _unitOfWork.SaveAsync();
+            await _senderAzureSB.SendMessagesAsync(metric.Name, metric.Value, metric.Time, metric.DeviceId??0);
+            //await _unitOfWork.MetricRepository.AddAsync(metric);
+            //await _unitOfWork.SaveAsync();
 
             return CreatedAtAction("GetMetric", new { id = metric.Id }, metric);
         }
