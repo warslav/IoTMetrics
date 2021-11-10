@@ -14,5 +14,9 @@ namespace IoTMetrics.Models.Models
         public string Name { get; set; }
         public int MinValue { get; set; }
         public int MaxValue { get; set; }
+        [Required(ErrorMessage = "Email Address is required")]
+        [StringLength(255)]
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
     }
 }

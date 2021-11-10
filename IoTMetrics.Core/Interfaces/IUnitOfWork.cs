@@ -12,6 +12,7 @@ namespace IoTMetrics.Core.Interfaces
     {
         public IDeviceRepository DeviceRepository { get; }
         public IMetricRepository MetricRepository { get; }
+        public INotificationRepository NotificationRepository { get; }
         Task<int> SaveAsync();
     }
 }

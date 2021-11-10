@@ -29,10 +29,15 @@ namespace IoTMetrics.Core
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IDeviceRepository, DeviceRepository>();
             services.AddTransient<IMetricRepository, MetricRepository>();
+            services.AddTransient<INotificationRepository, NotificationRepository>();
 
-            var appSettingsConfig = configuration.GetSection("AzureSBSettings");
-            services.Configure<AzureSBOptions>(appSettingsConfig);
+            var azureAppSettingsConfig = configuration.GetSection("AzureSBSettings");
+            services.Configure<AzureSBOptions>(azureAppSettingsConfig);
             services.AddHostedService<ReceiverAzureSB>();
+
+            var emailAppSettingsConfig = configuration.GetSection("EmailSettings");
+            services.Configure<EmailOptions>(emailAppSettingsConfig);
+            services.AddTransient<IEmailNotification, EmailNotification>();
         }
     }
 }

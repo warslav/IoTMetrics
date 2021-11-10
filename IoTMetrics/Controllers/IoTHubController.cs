@@ -16,10 +16,12 @@ namespace IoTMetrics.Controllers
     public class IoTHubController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailNotification _emailNotification;
 
-        public IoTHubController(IUnitOfWork unitOfWork)
+        public IoTHubController(IUnitOfWork unitOfWork, IEmailNotification emailNotification)
         {
             _unitOfWork = unitOfWork;
+            _emailNotification = emailNotification;
         }
 
         // POST: api/IoTHub
@@ -31,11 +33,25 @@ namespace IoTMetrics.Controllers
             {
                 return BadRequest();
             }
+            await _emailNotification.CheckMetric(metric.Name, metric.Value);
             await _unitOfWork.MetricRepository.AddAsync(metric);
             await _unitOfWork.SaveAsync();
 
             return CreatedAtAction("GetMetric", new { id = metric.Id }, metric);
         }
 
+        // GET: api/TestMetrics/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Metric>> GetMetric(int id)
+        {
+            var metric = await _unitOfWork.MetricRepository.GetByIdAsync(id);
+
+            if (metric == null)
+            {
+                return NotFound();
+            }
+
+            return metric;
+        }
     }
 }

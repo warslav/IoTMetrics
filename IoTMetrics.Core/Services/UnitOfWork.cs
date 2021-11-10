@@ -19,12 +19,14 @@ namespace IoTMetrics.Core.Services
 
         public IDeviceRepository DeviceRepository { get; }
         public IMetricRepository MetricRepository { get; }
+        public INotificationRepository NotificationRepository { get; }
 
-        public UnitOfWork(SensorContext context, IDeviceRepository deviceRepository, IMetricRepository metricRepository)
+        public UnitOfWork(SensorContext context, IDeviceRepository deviceRepository, IMetricRepository metricRepository, INotificationRepository notificationRepository)
         {
             _context = context;
             DeviceRepository = deviceRepository;
             MetricRepository = metricRepository;
+            NotificationRepository = notificationRepository;
         }
 
         public void Dispose()
