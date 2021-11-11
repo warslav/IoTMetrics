@@ -10,7 +10,8 @@ namespace IoTMetrics.Core.Interfaces
     public interface IEmailNotification
     {
         public Task CheckMetric(string name, int value);
-        Task<string> EmailTemplate(string name, int value, bool minValue);
+        Task<string> EmailTemplate(string name, int value, string checkValue, string checkName);
         Task SendEmail(string email, string body, string subject);
+        Task<(bool IsSucces, string improvedСondition)> CheckCorrectConditionAsunc(string condition);
     }
 }

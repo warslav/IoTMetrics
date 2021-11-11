@@ -14,10 +14,12 @@ namespace IoTMetrics.Controllers
     public class NotificationsController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailNotification _emailNotification;
 
-        public NotificationsController(IUnitOfWork unitOfWork)
+        public NotificationsController(IUnitOfWork unitOfWork, IEmailNotification emailNotification)
         {
             _unitOfWork = unitOfWork;
+            _emailNotification = emailNotification;
         }
 
         // GET: Notifications
@@ -55,10 +57,12 @@ namespace IoTMetrics.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,MinValue,MaxValue,Email")] Notification notification)
+        public async Task<IActionResult> Create([Bind("Id,Name,MinValue,MaxValue,Condition,Email")] Notification notification)
         {
-            if (ModelState.IsValid)
+            var checkCorrectCondition = await _emailNotification.CheckCorrectConditionAsunc(notification.Condition);
+            if (ModelState.IsValid && checkCorrectCondition.IsSucces)
             {
+                notification.Condition = checkCorrectCondition.improvedСondition;
                 await _unitOfWork.NotificationRepository.AddAsync(notification);
                 await _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(Index));
@@ -87,17 +91,18 @@ namespace IoTMetrics.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,MinValue,MaxValue,Email")] Notification notification)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,MinValue,MaxValue,Condition,Email")] Notification notification)
         {
             if (id != notification.Id || !NotificationExists(notification.Id))
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var checkCorrectCondition = await _emailNotification.CheckCorrectConditionAsunc(notification.Condition);
+            if (ModelState.IsValid && checkCorrectCondition.IsSucces)
             {
                 try
                 {
+                    notification.Condition = checkCorrectCondition.improvedСondition;
                     _unitOfWork.NotificationRepository.Update(notification);
                     await _unitOfWork.SaveAsync();
                 }

@@ -8,9 +8,11 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace IoTMetrics.Core.Services
@@ -30,33 +32,104 @@ namespace IoTMetrics.Core.Services
         {
             Notification notification = await _unitOfWork.NotificationRepository.GetByName(name);
             string body = "";
-            if (notification == null || (value > notification.MinValue && value < notification.MaxValue))
+            if (notification == null)
             {
                 return;
             }
-            else if (value <= notification.MinValue)
+            if (notification.MinValue != null && value <= notification.MinValue)
             {
-                body = await EmailTemplate(name,value, true);
+                body += await EmailTemplate(name,value, notification.MinValue.ToString(), "MinValue");
             }
-            else
+            if (notification.MaxValue != null && value >= notification.MaxValue)
             {
-                body = await EmailTemplate(name, value, false);
+                body += await EmailTemplate(name, value, notification.MaxValue.ToString(), "MaxValue");
             }
-            await SendEmail(notification.Email, body, "IoTMetrics");
+            if (!string.IsNullOrWhiteSpace(notification.Condition) && await IsMatchCondition(notification.Condition, value))
+            {
+                body += await EmailTemplate(name, value, notification.Condition, "Condition");
+            }
+            if (!string.IsNullOrEmpty(body))
+            {
+                await SendEmail(notification.Email, body, "IoTMetrics");
+            }
+            
         }
 
-        public async Task<string> EmailTemplate(string name, int value, bool minValue)
+        public async Task<(bool IsSucces, string improvedСondition)> CheckCorrectConditionAsunc(string condition)
+        {
+            if (string.IsNullOrWhiteSpace(condition))
+            {
+                return await Task.FromResult((true, condition));
+            }
+            string[] values = Regex.Split(condition, @"<=|>=|<|>|==|!=|\|\||&&");
+            if (values.Length < 2)
+            {
+                return await Task.FromResult((false, ""));
+            }
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (Int32.TryParse(values[i], out int _) || values[i] == "value")
+                {
+                    if (values[i].Trim() != values[i])
+                    {
+                        condition = Regex.Replace(condition, values[i], values[i].Trim());
+                    }
+                    continue;
+                }
+                if (string.IsNullOrWhiteSpace(values[i]))
+                {
+                    return await Task.FromResult((false, ""));
+                }
+                condition = Regex.Replace(condition, values[i], "value");
+            }
+            return await Task.FromResult((true, condition));
+        }
+
+        async Task<bool> IsMatchCondition(string condition, int value)
+        {
+            try
+            {
+                string[] values = Regex.Split(condition, @"<=|>=|<|>|==|!=|\|\||&&");
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (Int32.TryParse(values[i], out int _) || values[i].Trim() == "@0")
+                    {
+                        continue;
+                    }
+                    if (string.IsNullOrWhiteSpace(values[i]))
+                    {
+                        throw new Exception("wrong condition");
+                    }
+                    condition = Regex.Replace(condition, values[i], "@0");
+                }
+
+                var fn = DynamicExpressionParser.ParseLambda<bool>(null, false, condition, value).Compile();
+                return await Task.FromResult(fn());
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
+            }
+        }
+
+        public async Task<string> EmailTemplate(string name, int value, string checkValue, string checkName)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<div style=\"color:red;\">{0} = {1}</div>", name, value);
-            if (minValue)
+            switch (checkName)
             {
-                sb.AppendFormat("<div style=\"color:red;\">{0} below minimum value</div>", name);
+                case "MinValue":
+                    sb.AppendFormat("<div style=\"color:red;\">{0} below minimum value({1})</div>", name, checkValue);
+                    break;
+                case "MaxValue":
+                    sb.AppendFormat("<div style=\"color:red;\">{0} is higher than maximum value({1})</div>", name, checkValue);
+                    break;
+                case "Condition":
+                    sb.AppendFormat("<div style=\"color:red;\">{0} matched condition expression({1})</div>", name, checkValue);
+                    break;
+                
             }
-            else
-            {
-                sb.AppendFormat("<div style=\"color:red;\">{0} is higher than maximum value</div>", name);
-            }
+            
             return await Task.FromResult(sb.ToString());
         }
 

@@ -3,14 +3,16 @@ using System;
 using IoTMetrics.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IoTMetrics.Database.Migrations
 {
     [DbContext(typeof(SensorContext))]
-    partial class SensorContextModelSnapshot : ModelSnapshot
+    [Migration("20211111201359_ConditionToNotificationAdded")]
+    partial class ConditionToNotificationAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -40,6 +40,12 @@ namespace IoTMetrics.Core
             services.AddTransient<IEmailNotification, EmailNotification>();
 
             services.AddTransient<SenderAzureSB>();
+
+            //services.AddTransient((provider) =>
+            //{
+            //    var azureConfiguraiton = provider.GetRequiredService<IOptions<AzureSBOptions>>();
+            //    return new ServiceBusClient(azureConfiguraiton.Value.ServiceBusConnectionString);
+            //});
         }
     }
 }
