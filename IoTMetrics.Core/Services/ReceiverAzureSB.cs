@@ -20,27 +20,23 @@ namespace IoTMetrics.Core.Services
     public class ReceiverAzureSB : BackgroundService
     {
         private readonly AzureSBOptions _azureSBOptions;
-        //private readonly IUnitOfWork _unitOfWork;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ServiceBusClient _serviceBusClient;
 
-        public ReceiverAzureSB(IOptions<AzureSBOptions> azureSBOptions, IServiceScopeFactory scopeFactory)
+        public ReceiverAzureSB(IOptions<AzureSBOptions> azureSBOptions, IServiceScopeFactory scopeFactory, ServiceBusClient serviceBusClient)
         {
             _azureSBOptions = azureSBOptions.Value;
             _scopeFactory = scopeFactory;
+            _serviceBusClient = serviceBusClient;
         }
 
         async Task MessageHandler(ProcessMessageEventArgs args)
         {
-            string body = args.Message.Body.ToString();
-            Console.WriteLine($"Message received: {body}");
-
             var options = new JsonSerializerOptions()
             {
                 NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString
             };
 
-            // deserialize
-            
             Metric metric = JsonSerializer.Deserialize<Metric>(args.Message.Body, options);
             
             using (var scope = _scopeFactory.CreateScope())
@@ -60,20 +56,16 @@ namespace IoTMetrics.Core.Services
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            ServiceBusClient client = new ServiceBusClient(_azureSBOptions.ServiceBusConnectionString);
-            string queueOrTopicName = _azureSBOptions.UseTopic ? _azureSBOptions.TopicName : _azureSBOptions.QueueName;
-            string subscriptionName = _azureSBOptions.UseTopic ? _azureSBOptions.SubscriptionName : string.Empty;
+            var queueOrTopicName = _azureSBOptions.UseTopic ? _azureSBOptions.TopicName : _azureSBOptions.QueueName;
+            var subscriptionName = _azureSBOptions.UseTopic ? _azureSBOptions.SubscriptionName : string.Empty;
 
-            // create a processor that we can use to process the messages, either with a queue or a topic/subscription
             ServiceBusProcessor processor = _azureSBOptions.UseTopic
-                ? client.CreateProcessor(queueOrTopicName, subscriptionName, new ServiceBusProcessorOptions { })
-                : client.CreateProcessor(queueOrTopicName, new ServiceBusProcessorOptions());
+                ? _serviceBusClient.CreateProcessor(queueOrTopicName, subscriptionName)
+                : _serviceBusClient.CreateProcessor(queueOrTopicName);
             
-            // add handler to process messages
             processor.ProcessMessageAsync += MessageHandler;
             processor.ProcessErrorAsync += ErrorHandler;
 
-            // start processing 
             processor.StartProcessingAsync();
             return Task.CompletedTask;
         }

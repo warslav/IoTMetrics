@@ -10,7 +10,7 @@ namespace IoTMetrics.Core.Interfaces
 {
     public interface IMetricRepository : IRepository<Metric>
     {
-        Task<ICollection> Include(int? deviceId);
-        Task<ICollection> GetMetricsBetweenDates(int deviceId, DateTime startDay, DateTime endDay, string name);
+        Task<ICollection<Metric>> Include(int? deviceId);
+        Task<ICollection<Metric>> GetMetricsBetweenDates(int deviceId, DateTime startDay, DateTime endDay, string name);
     }
 }

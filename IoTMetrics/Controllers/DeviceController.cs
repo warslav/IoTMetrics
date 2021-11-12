@@ -171,10 +171,9 @@ namespace IoTMetrics.Controllers
                 return new JsonResult(list);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                throw ex.InnerException;
             }
             
         }

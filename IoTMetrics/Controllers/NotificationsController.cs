@@ -28,24 +28,6 @@ namespace IoTMetrics.Controllers
             return View(await _unitOfWork.NotificationRepository.GetAllAsync());
         }
 
-        // GET: Notifications/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var notification = await _context.Notifications
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (notification == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(notification);
-        //}
-
         // GET: Notifications/Create
         public IActionResult Create()
         {
@@ -106,7 +88,7 @@ namespace IoTMetrics.Controllers
                     _unitOfWork.NotificationRepository.Update(notification);
                     await _unitOfWork.SaveAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     if (!NotificationExists(notification.Id))
                     {
@@ -114,7 +96,7 @@ namespace IoTMetrics.Controllers
                     }
                     else
                     {
-                        throw;
+                        throw ex.InnerException;
                     }
                 }
                 return RedirectToAction(nameof(Index));

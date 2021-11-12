@@ -25,7 +25,7 @@ namespace IoTMetrics.Core.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Couldn't retrieve entities: {ex.Message}");
+                throw new Exception($"Couldn't retrieve entities by name '{name}': {ex.Message}", ex);
             }
         }
     }

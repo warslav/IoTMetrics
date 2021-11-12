@@ -44,7 +44,7 @@ namespace IoTMetrics.Core.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"{nameof(entity)} could not be saved: {ex.Message}");
+                throw new Exception($"{nameof(entity)} could not be saved: {ex.Message}", ex);
             }
         }
 
@@ -73,7 +73,7 @@ namespace IoTMetrics.Core.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Couldn't retrieve entities: {ex.Message}");
+                throw new Exception($"Couldn't retrieve entities: {ex.Message}", ex);
             }
         }
 
@@ -103,25 +103,15 @@ namespace IoTMetrics.Core.Services
             {
                 if (entity != null)
                 {
-                    ShowEntityState(_context);
                     _context.Set<T>().Attach(entity);
                     _context.Entry(entity).State = EntityState.Modified;
-                    ShowEntityState(_context);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"{nameof(entity)} state could not be updated: {ex.Message}");
+                throw new Exception($"{nameof(entity)} state could not be updated: {ex.Message}", ex);
             }
         }
 
-        public static void ShowEntityState(SensorContext context)
-        {
-            foreach (EntityEntry entry in context.ChangeTracker.Entries())
-            {
-                //Discards are local variables which you can assign but cannot read from. i.e. they are “write-only” local variables.
-                _ = ($"type: {entry.Entity.GetType().Name}, state: {entry.State}," + $" {entry.Entity}");
-            }
-        }
     }
 }

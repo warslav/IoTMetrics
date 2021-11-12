@@ -19,7 +19,7 @@ namespace IoTMetrics.Core.Services
             _context = context;
         }
 
-        public virtual async Task<ICollection> Include(int? deviceId)
+        public virtual async Task<ICollection<Metric>> Include(int? deviceId)
         {
             try
             {
@@ -27,11 +27,11 @@ namespace IoTMetrics.Core.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Couldn't retrieve entities: {ex.Message}");
+                throw new Exception($"Couldn't retrieve entities by deviceId '{deviceId}': {ex.Message}", ex);
             }
         }
 
-        public virtual async Task<ICollection> GetMetricsBetweenDates(int deviceId, DateTime startDay, DateTime endDay, string name)
+        public virtual async Task<ICollection<Metric>> GetMetricsBetweenDates(int deviceId, DateTime startDay, DateTime endDay, string name)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace IoTMetrics.Core.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Couldn't retrieve entities: {ex.Message}");
+                throw new Exception($"Couldn't retrieve entities between dates by deviceId '{deviceId}' and name '{name}' : {ex.Message}", ex);
             }
         }
     }

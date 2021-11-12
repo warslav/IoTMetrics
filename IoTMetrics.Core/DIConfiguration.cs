@@ -13,6 +13,8 @@ using IoTMetrics.Models;
 using IoTMetrics.Core.Interfaces;
 using IoTMetrics.Core.Services;
 using IoTMetrics.Core.DTO.Options;
+using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Options;
 
 namespace IoTMetrics.Core
 {
@@ -31,6 +33,12 @@ namespace IoTMetrics.Core
             services.AddTransient<IMetricRepository, MetricRepository>();
             services.AddTransient<INotificationRepository, NotificationRepository>();
 
+            services.AddTransient((provider) =>
+            {
+                var azureConfiguraiton = provider.GetRequiredService<IOptions<AzureSBOptions>>();
+                return new ServiceBusClient(azureConfiguraiton.Value.ServiceBusConnectionString);
+            });
+
             var azureAppSettingsConfig = configuration.GetSection("AzureSBSettings");
             services.Configure<AzureSBOptions>(azureAppSettingsConfig);
             services.AddHostedService<ReceiverAzureSB>();
@@ -41,11 +49,6 @@ namespace IoTMetrics.Core
 
             services.AddTransient<SenderAzureSB>();
 
-            //services.AddTransient((provider) =>
-            //{
-            //    var azureConfiguraiton = provider.GetRequiredService<IOptions<AzureSBOptions>>();
-            //    return new ServiceBusClient(azureConfiguraiton.Value.ServiceBusConnectionString);
-            //});
         }
     }
 }
