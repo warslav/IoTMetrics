@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTMetrics.Core", "IoTMetri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTMetrics.Database", "IoTMetrics.Database\IoTMetrics.Database.csproj", "{D5F490EC-D24B-4627-9384-D3A8E9DF22DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleIoTEmulator", "ConsoleIoTEmulator\ConsoleIoTEmulator.csproj", "{F9D040A1-7C76-4CC3-AD55-E2CC0AD9C803}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D5F490EC-D24B-4627-9384-D3A8E9DF22DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5F490EC-D24B-4627-9384-D3A8E9DF22DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5F490EC-D24B-4627-9384-D3A8E9DF22DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9D040A1-7C76-4CC3-AD55-E2CC0AD9C803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9D040A1-7C76-4CC3-AD55-E2CC0AD9C803}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9D040A1-7C76-4CC3-AD55-E2CC0AD9C803}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9D040A1-7C76-4CC3-AD55-E2CC0AD9C803}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
