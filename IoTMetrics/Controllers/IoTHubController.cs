@@ -19,12 +19,14 @@ namespace IoTMetrics.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailNotification _emailNotification;
         private readonly SenderAzureSB _senderAzureSB;
+        private readonly MQTTBroker _mqttBroker;
 
-        public IoTHubController(IUnitOfWork unitOfWork, IEmailNotification emailNotification, SenderAzureSB senderAzureSB)
+        public IoTHubController(IUnitOfWork unitOfWork, IEmailNotification emailNotification, SenderAzureSB senderAzureSB, MQTTBroker mqttBroker)
         {
             _unitOfWork = unitOfWork;
             _emailNotification = emailNotification;
             _senderAzureSB = senderAzureSB;
+            _mqttBroker = mqttBroker;
         }
 
         // POST: api/IoTHub
@@ -38,6 +40,7 @@ namespace IoTMetrics.Controllers
             }
             await _emailNotification.CheckMetric(metric.Name, metric.Value);
             await _senderAzureSB.SendMessagesAsync(metric.Name, metric.Value, metric.Time, metric.DeviceId??0);
+            await _mqttBroker.PublishMetricAsync(metric.Name, metric.Value, metric.Time, metric.DeviceId ?? 0);
             //await _unitOfWork.MetricRepository.AddAsync(metric);
             //await _unitOfWork.SaveAsync();
 

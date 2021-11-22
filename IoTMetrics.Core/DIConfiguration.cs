@@ -49,6 +49,10 @@ namespace IoTMetrics.Core
 
             services.AddTransient<SenderAzureSB>();
 
+            var mqttAppSettingsConfig = configuration.GetSection("MQTTSettings");
+            services.Configure<MQTTOptions>(mqttAppSettingsConfig);
+            services.AddSingleton<MQTTBroker>();
+            services.AddHostedService<MQTTBroker>(provider => provider.GetService<MQTTBroker>());
         }
     }
 }

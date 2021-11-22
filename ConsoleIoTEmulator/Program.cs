@@ -18,6 +18,8 @@ namespace ConsoleIoTEmulator
             ConfigurationBinder.Bind(configuration.GetSection("Endpoints"), endpoints);
             var url = endpoints.UrlLocalhost;
 
+            Console.WriteLine($"Send metrics to {endpoints.UrlLocalhost}?");
+            Console.ReadKey();
             await Sender.SendMessagesAsync(url
                 , new string[] { "temperature", "relative humidity", "air pressure", "illuminance" }
                 , 12);

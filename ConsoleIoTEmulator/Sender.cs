@@ -70,7 +70,7 @@ namespace ConsoleIoTEmulator
                     Console.WriteLine(ex.Message);
                 }
 
-                //Console.ReadKey();
+                Console.ReadKey();
             }
 
         }
