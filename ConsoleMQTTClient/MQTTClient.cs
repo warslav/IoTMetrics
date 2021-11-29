@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
@@ -7,11 +7,8 @@ using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Extensions.ManagedClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 
 namespace ConsoleMQTTClient
 {
@@ -36,7 +33,7 @@ namespace ConsoleMQTTClient
             try
             {
                 MqttClientOptionsBuilder builder = new MqttClientOptionsBuilder()
-                                       .WithClientId(_mqttSettings.ClientId)
+                                       .WithClientId(Guid.NewGuid().ToString())
                                        .WithTcpServer(_mqttSettings.BrokerHostName, _mqttSettings.BrokerPort);
 
                 _options = new ManagedMqttClientOptionsBuilder()
